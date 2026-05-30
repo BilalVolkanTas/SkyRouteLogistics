@@ -1,0 +1,80 @@
+﻿@{
+    ViewData["Title"] = "Canlı Uçuş Takip Ekranı";
+}
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+
+<div class="text-center my-4">
+    <h1 class="display-4 text-primary">SkyRoute Logistics</h1>
+    <p class="lead">Angular & .NET Core Web API Entegrasyonu ile Canlı Panel</p>
+</div>
+
+<div ng-app="SkyRouteApp" ng-controller="FlightController" class="container mt-4">
+    
+    <div class="card shadow">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">✈️ Aktif Uçuş Seferleri (Angular ile Canlı Listeleme)</h5>
+            <button ng-click="verileriYenile()" class="btn btn-sm btn-primary">🔄 Listeyi Yenile</button>
+        </div>
+        <div class="card-body">
+            
+            <div ng-if="yukleniyor" class="text-center my-3">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p>Bulut veri tabanından veriler asenkron çekiliyor...</p>
+            </div>
+
+            <div ng-if="!yukleniyor && flights.length == 0" class="alert alert-warning text-center">
+                Henüz uçuş seferi eklenmemiş. Lütfen önce MVC panelinden uçuş ekleyin.
+            </div>
+
+            <table ng-if="!yukleniyor && flights.length > 0" class="table table-hover table-striped">
+                <thead class="table-secondary">
+                    <tr>
+                        <th>Uçuş ID</th>
+                        <th>Uçuş Numarası</th>
+                        <th>Kalkış Noktası</th>
+                        <th>Varış Noktası</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="f in flights">
+                        <td><strong>{{ f.id }}</strong></td>
+                        <td><span class="badge bg-success fs-6">{{ f.flightNumber }}</span></td>
+                        <td>{{ f.departure }}</td>
+                        <td>{{ f.destination }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // Angular modülünü başlatıyoruz
+    var app = angular.module('SkyRouteApp', []);
+
+    // Controller yapısını kuruyoruz ($http .NET API'ye istek atmak için kullanılır)
+    app.controller('FlightController', function($scope, $http) {
+        $scope.flights = [];
+        $scope.yukleniyor = true;
+
+        // .NET Core Web API'ye istek atan fonksiyon
+        $scope.verileriYenile = function() {
+            $scope.yukleniyor = true;
+            
+            // Bizim yazdığımız API ucuna GET isteği atıyoruz
+            $http.get('/api/flights')
+                .then(function(response) {
+                    $scope.flights = response.data; // Gelen JSON verisini Angular değişkenine aktar
+                    $scope.yukleniyor = false;
+                }, function(error) {
+                    console.error("API hatası:", error);
+                    $scope.yukleniyor = false;
+                });
+        };
+
+        // Sayfa ilk açıldığında verileri otomatik çek
+        $scope.verileriYenile();
+    });
+</script>
