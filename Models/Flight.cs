@@ -4,7 +4,7 @@ namespace SkyRouteLogistics.Models
 {
     public class Flight
     {
-        [Key] // Okulda gördüğün Primary Key (Birincil Anahtar)
+        [Key] 
         public int Id { get; set; }
 
         [Required]
