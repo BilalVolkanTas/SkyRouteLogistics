@@ -17,7 +17,7 @@ namespace SkyRouteLogistics.Models
         [Required]
         public string ContentDescription { get; set; } // Kargo İçeriği
 
-        // Okulda gördüğün Foreign Key (Yabancı Anahtar) mantığı:
+       
         // Her kargo bir uçuşa ait olmak zorundadır.
         public int FlightId { get; set; }
         
